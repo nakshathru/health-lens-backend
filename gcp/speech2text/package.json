@@ -1,0 +1,11 @@
+{
+  "name": "speech2text",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "@google-cloud/functions-framework": "^3.3.0",
+    "@google-cloud/speech": "^6.0.2",
+    "node-fetch": "2"
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "name": "healthlens-api",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "start": "npx sls offline start --reloadHandler --stage local"
+  },
+  "devDependencies": {
+    "serverless-esbuild": "^1.48.4",
+    "serverless-offline": "^13.1.1"
+  },
+  "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.421.0",
+    "@aws-sdk/lib-dynamodb": "^3.421.0",
+    "@google-cloud/speech": "^6.0.2",
+    "@google-cloud/storage": "^7.1.0",
+    "busboy": "^1.6.0"
+  }
+}

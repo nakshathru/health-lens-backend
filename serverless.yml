@@ -1,0 +1,71 @@
+service: healthlens-api
+frameworkVersion: '3'
+
+package:
+  individually: true
+  patterns:
+    - src/controllers/gcp_access_key.json
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  region: us-east-1
+  # environment:
+  #   GOOGLE_APPLICATION_CREDENTIALS: '/Users/nakshathru/Documents/hackathon/healthlens-api/gcp_access_key.json'
+
+functions:
+
+  signedUrl:
+    handler: src/controllers/get-upload-url.handler
+    timeout: 29
+    events:
+      - httpApi:
+          path: /signed-url
+          method: get
+
+  uploadTranslate:
+    handler: src/controllers/upload-transcription.handler
+    role: HealthLensLambdaRole
+    timeout: 29
+    events:
+      - httpApi:
+          path: /upload-trans
+          method: post  
+
+custom:
+  esbuild:
+    bundle: true
+    minify: true
+    external:
+      - 'aws-sdk'
+
+plugins:
+  - serverless-esbuild
+  - serverless-offline
+
+resources:
+  Resources:
+    HealthLensLambdaRole:
+      Type: AWS::IAM::Role
+      Properties:
+        RoleName: HealthLensLambdaRole
+        AssumeRolePolicyDocument:
+          Version: "2012-10-17"
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service:
+                  - lambda.amazonaws.com
+              Action: sts:AssumeRole
+        ManagedPolicyArns:
+          - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+        Policies:
+          - PolicyName: HealthLensLambdaPolicy
+            PolicyDocument:
+              Version: "2012-10-17"
+              Statement:
+                - Effect: Allow
+                  Action:
+                    - dynamodb:*
+                  Resource:
+                    - "*"
