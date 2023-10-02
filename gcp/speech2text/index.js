@@ -10,7 +10,7 @@ const os = require('os');
 const path = require('path');
 const fs = require('fs');
 
-const API_URL='https://uoxfgxbl34.execute-api.us-east-1.amazonaws.com/upload-trans'
+const API_URL='https://y9pz5kubn2.execute-api.us-east-1.amazonaws.com/upload-trans'
 
 functions.cloudEvent('speech2Text', async cloudEvent => {
     console.log(`Event ID: ${cloudEvent.id}`);
@@ -36,6 +36,7 @@ functions.cloudEvent('speech2Text', async cloudEvent => {
       maxAlternatives: 1,
       profanityFilter: true,
       enableSeparateRecognitionPerChannel: true,
+      useEnhanced: true,
       model: 'medical_conversation'
     };
     const request = {
@@ -45,14 +46,25 @@ functions.cloudEvent('speech2Text', async cloudEvent => {
   
     // Detects speech in the audio file
     const [response] = await client.recognize(request);
+
     const transcription = response.results
-      .map(result => result.alternatives[0].transcript)
-      .join('\n');
+    let channel1=''
+    let channel2='';
+    for(trans of transcription){
+        if(trans.channelTag === 1){
+            channel1+= trans.alternatives[0].transcript + "\n"
+        }
+        else if (trans.channelTag === 2){
+            channel2+= trans.alternatives[0].transcript + "\n"
+        }
+    }
 
     await fetch(API_URL, {
         method: 'post',
         body: JSON.stringify({
-            transcription,
+            transcription:{
+              channel1,channel2
+            },
             patientId: filenameUUID
         }),
         headers: {'Content-Type': 'application/json'}

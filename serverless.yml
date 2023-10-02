@@ -10,11 +10,14 @@ provider:
   name: aws
   runtime: nodejs18.x
   region: us-east-1
+  ecr:
+    images:
+      appimage:
+        path: ./
   # environment:
   #   GOOGLE_APPLICATION_CREDENTIALS: '/Users/nakshathru/Documents/hackathon/healthlens-api/gcp_access_key.json'
 
 functions:
-
   signedUrl:
     handler: src/controllers/get-upload-url.handler
     timeout: 29
@@ -32,12 +35,30 @@ functions:
           path: /upload-trans
           method: post  
 
+  pred:
+    image:
+      name: appimage
+    role: HealthLensLambdaRole
+    events:
+      - stream:
+          arn: arn:aws:dynamodb:us-east-1:255919122419:table/health-lens-results/stream/2023-10-02T08:53:30.735
+          filterPatterns:
+            - eventName: [INSERT]
+            - sortKey: ['raw']
+
+  # predL:
+  #   handler: src/controllers/open-ai-pred.handler
+  #   runtime: python3.9
+
 custom:
   esbuild:
     bundle: true
     minify: true
     external:
       - 'aws-sdk'
+  pythonRequirements:
+    dockerizePip: true
+    layer: true
 
 plugins:
   - serverless-esbuild

@@ -5,3 +5,5 @@ jspm_packages
 # Serverless directories
 .serverless
 src/controllers/gcp_access_key.json
+
+venv/*
