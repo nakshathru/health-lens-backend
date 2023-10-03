@@ -27,7 +27,8 @@ def handler(event, context):
     response_schemas = [
     ResponseSchema(name="diagnosis", description="medical diagnosis made by the doctor and suspected medical conditions and possible treatment"),
     ResponseSchema(name="symptoms", description="symptoms mentioned in the user's question in detail."),
-     ResponseSchema(name="causes", description="possible cuases for the patients symptoms in detail")
+     ResponseSchema(name="causes", description="possible cuases for the patients symptoms in detail"),
+     ResponseSchema(name="medication", description="recommended medications and prescription")
     ]
     output_parser = StructuredOutputParser.from_response_schemas(response_schemas)
 
@@ -35,7 +36,7 @@ def handler(event, context):
 
     format_instructions = output_parser.get_format_instructions()
     prompt = PromptTemplate(
-        template="provide medical recommendations including detailed diagnosis and possible causes for the symptoms from the following doctor patient conversation. Mention the possible medical condition the patient may have and the treatment required.Consider this as the first conversation without any prior context \n{format_instructions}\n{conversation}",
+        template="provide medical recommendations including detailed diagnosis and possible causes for the symptoms from the following doctor patient conversation. Mention the medical condition the patient may have and the treatment required. Include the recommended medications and prescription for the patient. Consider this as the first conversation without any prior context \n{format_instructions}\n{conversation}",
         input_variables=["conversation"],
         partial_variables={"format_instructions": format_instructions}
     )
