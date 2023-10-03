@@ -45,7 +45,8 @@ functions.cloudEvent('speech2Text', async cloudEvent => {
     };
   
     // Detects speech in the audio file
-    const [response] = await client.recognize(request);
+    const [operation] = await client.longRunningRecognize(request);
+    const [response] = await operation.promise();
 
     const transcription = response.results
     let channel1=''
